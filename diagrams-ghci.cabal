@@ -1,0 +1,80 @@
+Name:                diagrams-ghci
+Version:             0.1.0
+Cabal-Version:       >= 1.8
+Synopsis:            Using the Haskell interpreter to display diagrams
+Category:            Graphics, GUI
+Description: 
+License:             BSD3
+License-file:        LICENSE
+Author:              Michael Sloan
+Maintainer:          Michael Sloan <mgsloan@gmail.com>
+Stability:           experimental
+Build-Type:          Simple
+
+executable ghcdi
+  Main-Is:           Main.hs
+  Hs-Source-Dirs:    src
+  Build-Depends:
+                     containers,
+                     colour,
+                     diagrams-lib,
+                     diagrams-cairo,
+                     diagrams-contrib,
+                     fclabels,
+                     gtk-toy,
+                     gtk-toy-diagrams,
+
+                     -- Hint
+                      base >= 4, base < 5,
+                      haskell-src,
+                      ghc > 6.6,
+                      ghc-paths,
+                      ghc-mtl >= 1.0.1.0 && < 1.1.0.0,
+                      mtl,
+                      filepath,
+                      utf8-string,
+                      extensible-exceptions,
+                      MonadCatchIO-mtl >= 0.2,
+                      syb,
+                      random,
+                      directory
+
+  Other-Modules:     Simple
+
+                     -- Hint
+                      Language.Haskell.Interpreter
+                      Language.Haskell.Interpreter.Extension
+                      Language.Haskell.Interpreter.Unsafe
+                      Language.Haskell.Interpreter.GHC
+                      Language.Haskell.Interpreter.GHC.Unsafe
+                      Hint.GHC
+                      Hint.Base
+                      Hint.InterpreterT
+                      Hint.Compat
+                      Hint.Configuration
+                      Hint.Extension
+                      Hint.Context
+                      Hint.Conversions
+                      Hint.Eval
+                      Hint.Parsers
+                      Hint.Reflection
+                      Hint.Typecheck
+                      Hint.Sandbox
+                      Hint.SignalHandlers
+                      Hint.Util
+  extensions:
+                     -- Hint
+                      CPP
+                      GeneralizedNewtypeDeriving
+                      MultiParamTypeClasses
+                      DeriveDataTypeable
+                      MagicHash
+                      TypeSynonymInstances
+                      FlexibleInstances
+                      FlexibleContexts
+                      FunctionalDependencies
+                      KindSignatures
+                      Rank2Types
+                      ScopedTypeVariables
+                      ExistentialQuantification
+                      PatternGuards
