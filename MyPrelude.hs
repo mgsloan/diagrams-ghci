@@ -2,3 +2,4 @@
 module MyPrelude (module Diagrams.Prelude, module Diagrams.Backend.Cairo) where
 import Diagrams.Prelude
 import Diagrams.Backend.Cairo
+import Diagrams.TwoD.Path.Turtle
