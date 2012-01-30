@@ -1,28 +1,26 @@
 {-# LANGUAGE TemplateHaskell
            , StandaloneDeriving #-}
-import ActiveHs.Simple
 
-import Data.Label
+import ActiveHs.Simple
+import qualified Language.Haskell.Interpreter as Ghci
+
+import Graphics.UI.Gtk.Toy.Prelude
+import Diagrams.Backend.Cairo (Cairo)
+
 import Prelude hiding ((.))
 import Control.Category ((.))
+import Data.Label
 
 import Data.Data
-import Diagrams.Prelude hiding (text)
-import Diagrams.Backend.Cairo
-import Graphics.UI.Gtk.Toy
-import Graphics.UI.Gtk.Toy.Diagrams
-import Graphics.UI.Gtk.Toy.Text
-import Graphics.UI.Gtk.Toy.Text.Interactive
-import qualified Language.Haskell.Interpreter as Ghci
 
 main = do
   chan <- startGHCiServer ["."] print print
-  runToy $ State chan initialState mempty
+  runToy $ State chan cursorText mempty
 
 data State = State
   { _chan :: TaskChan
   , _code :: MarkedText CursorMark
-  , _result :: CairoDiagram
+  , _response :: CairoDiagram
   }
 
 $(mkLabels [''State])
@@ -30,17 +28,21 @@ $(mkLabels [''State])
 plainText = monoText . (`MarkedText` ([] :: [(Ivl, CursorMark)]))
 
 instance Diagrammable State Cairo R2 where
-  toDiagram (State _ c r) = (plainText "> " ||| monoText c) === alignL r
+  toDiagram (State _ c r) = (alignT $ plainText "> " ||| monoText c)
+                         === 
+                            alignL r
 
 instance Interactive State where
-  display = displayDiagram (scaleY (-1) . margin . toDiagram)
+  keyboard k _ s = update $ modify code (textKey k) s
 
-  keyboard k _ s = update $ modify code (handleKey k) s
+instance GtkInteractive State where
+  display = displayDiagram 
+          ( scaleY (-1) . (strutX 50 |||) . (strutY 58 |||) . toDiagram)
 
--- Needed in order to be able to provide a witness for CairoDiagram
+-- Needed in order to be able to provide a witness for CairoDiagram.
 deriving instance Typeable Any
 
 update s = do
   val <- interpret (get chan s) "MyPrelude"
-       $ Ghci.interpret (get (text . code) s) (mempty :: CairoDiagram)
-  return $ set result (either (plainText . show) id val) s
+       $ Ghci.interpret (get (mText . code) s) (mempty :: CairoDiagram)
+  return $ set response (either (plainText . show) id val) s
