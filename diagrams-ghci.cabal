@@ -39,9 +39,9 @@ executable ghcdi
                       random,
                       directory
 
-  Other-Modules:     Simple
+  Other-Modules:     ActiveHs.Simple
 
-                     -- Hint
+                     -- Hint 
                       Language.Haskell.Interpreter
                       Language.Haskell.Interpreter.Extension
                       Language.Haskell.Interpreter.Unsafe
