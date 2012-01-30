@@ -138,10 +138,13 @@ data SessionData a = SessionData {
                        ghcErrLogger    :: GhcErrLogger
                      }
 
-newtype GhcError = GhcError (GHC.Severity, [GHC.SrcSpan], String, String)
-
-instance Show GhcError where
-  show (GhcError (_, _, a, b)) = a ++ " " ++ b
+-- When intercepting errors reported by GHC, we only get a ErrUtils.Message
+-- and a SrcLoc.SrcSpan. The latter holds the file name and the location
+-- of the error. However, SrcSpan is abstract and it doesn't provide
+-- functions to retrieve the line and column of the error... we can only
+-- generate a string with this information. Maybe I can parse this string
+-- later.... (sigh)
+newtype GhcError = GhcError{errMsg :: String} deriving Show
 
 mapGhcExceptions :: MonadInterpreter m
                  => (String -> InterpreterError)
@@ -199,10 +202,9 @@ mayFail action =
         case (maybe_res, null es) of
             (Nothing,True)  -> throwError $ UnknownError "Got no error message"
             (Nothing,False) -> throwError $ WontCompile (reverse es)
-            (Just a, _)  -> return a
---            (Just a, True)  -> return a
---            (Just _, False) -> fail $ "GHC returned a result but said: " ++
---                                      show es
+            (Just a, True)  -> return a
+            (Just _, False) -> fail $ "GHC returned a result but said: " ++
+                                      show es
 
 -- ================ Misc ===================================
 

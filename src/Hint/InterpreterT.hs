@@ -30,9 +30,6 @@ import Data.Dynamic
 
 import qualified GHC.Paths
 
-
-import qualified ErrUtils as GHC
-import qualified SrcLoc as GHC
 import qualified Hint.GHC as GHC
 import qualified Hint.Compat as Compat
 
@@ -91,29 +88,10 @@ runGhc_impl a = InterpreterT (lift (lift a))
     where rethrowGE = throwError . GhcException
           rethrowWC = throwError
                     . WontCompile
-                    . map (makeError GHC.SevError)
+                    . map (GhcError . show)
                     . GHC.bagToList
                     . GHC.srcErrorMessages
-
 #endif
-
-makeError :: GHC.Severity -> GHC.ErrMsg -> GhcError
-makeError sev err = GhcError 
-  ( sev
-  , GHC.errMsgSpans err
-  , GHC.showSDoc $ GHC.errMsgShortDoc err
-  , GHC.showSDoc $ GHC.errMsgExtraInfo err
-  )
-
-{-
-makeSimpleError :: String -> GhcError
-makeSimpleError e = GhcError $
-  ( GHC.SevFatal
-  , []
-  , GHC.errMsgShortDoc $ GHC.mkPlainErrMsg span (GHC.text $ "GHCi server died:" ++ e))
- where
-  span = GHC.mkGeneralSrcSpan (GHC.fsLit "")
--}
 
 showGhcEx :: GHC.GhcException -> String
 showGhcEx = flip GHC.showGhcException ""
@@ -139,17 +117,23 @@ initialize args =
        -- available; calling this function once is mandatory!
        _ <- runGhc1 GHC.setSessionDynFlags df2{GHC.log_action = log_handler}
 
-{-
-if __GLASGOW_HASKELL__ >= 700
-       let extMap      = map (\(a,b,_,_) -> (a,b)) GHC.xFlags
+#if __GLASGOW_HASKELL__ >= 700
+#if __GLASGOW_HASKELL__ >= 702
+#if __GLASGOW_HASKELL__ >= 704
+       let extMap      = map (\(a,b,_) -> (a,b)) GHC.xFlags
+#else
+       let extMap      = map (\(a,_,b,_) -> (a,b)) GHC.xFlags
+#endif
+#else
+       let extMap      = map (\(a,b,_) -> (a,b)) GHC.xFlags
+#endif
        let toOpt e     = let err = error ("init error: unknown ext:" ++ show e)
                          in fromMaybe err (lookup e extMap)
        let getOptVal e = (asExtension e, GHC.xopt (toOpt e) df2)
        let defExts = map  getOptVal Compat.supportedExtensions
-else
--}
+#else
        let defExts = zip availableExtensions (repeat False)
--- #endif
+#endif
 
        onState (\s -> s{defaultExts = defExts})
 
@@ -232,8 +216,14 @@ newSessionData  a =
        }
 
 mkLogHandler :: IORef [GhcError] -> GhcErrLogger
-mkLogHandler r sev src _ msg 
-  = modifyIORef r (GhcError (sev, [src], GHC.showSDoc msg, ""):)
+mkLogHandler r _ src style msg = modifyIORef r (errorEntry :)
+    where errorEntry = mkGhcError src style msg
+
+mkGhcError :: GHC.SrcSpan -> GHC.PprStyle -> GHC.Message -> GhcError
+mkGhcError src_span style msg = GhcError{errMsg = niceErrMsg}
+    where niceErrMsg = GHC.showSDoc . GHC.withPprStyle style $
+                         GHC.mkLocMessage src_span msg
+
 
 -- The MonadInterpreter instance
 

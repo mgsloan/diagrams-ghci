@@ -56,9 +56,7 @@ newPhantomModule =
        return PhantomModule{pm_name = mod_name, pm_file = tmp_dir </> nums}
 
 allModulesInContext :: MonadInterpreter m => m ([ModuleName], [ModuleName])
-allModulesInContext =
-    do (l, i) <- runGhc Compat.getContext
-       return (map fromGhcRep_ l, map fromGhcRep_ i)
+allModulesInContext = runGhc Compat.getContextNames
 
 addPhantomModule :: MonadInterpreter m
                  => (ModuleName -> ModuleText)
@@ -248,7 +246,7 @@ setImportsQ ms =
        pm <- maybe (return []) (findModule . pm_name >=> return . return) new_pm
        (old_top_level, _) <- runGhc Compat.getContext
        let new_top_level = pm ++ old_top_level
-       runGhc2 Compat.setContext new_top_level unqual_mods
+       runGhc2 Compat.setContextModules new_top_level unqual_mods
        --
        onState (\s ->s{qual_imports = quals})
 

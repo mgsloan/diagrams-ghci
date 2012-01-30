@@ -23,10 +23,10 @@ runParser :: MonadInterpreter m => GHC.P a -> String -> m ParseResult
 runParser parser expr =
     do dyn_fl <- runGhc GHC.getSessionDynFlags
        --
-       let buf = GHC.stringToStringBuffer expr
+       buf <- Compat.stringToStringBuffer expr
        --
        -- ghc >= 7 panics if noSrcLoc is given
-       let (GHC.RealSrcLoc srcLoc) = GHC.mkSrcLoc (GHC.fsLit "<hint>") 1 1
+       let srcLoc = Compat.mkSrcLoc (GHC.fsLit "<hint>") 1 1
        let parse_res = GHC.unP parser (Compat.mkPState dyn_fl buf srcLoc)
        --
        case parse_res of

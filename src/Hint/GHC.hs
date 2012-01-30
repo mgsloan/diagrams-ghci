@@ -19,6 +19,9 @@ module Hint.GHC (
 #elif __GLASGOW_HASKELL__ < 608
     module SrcLoc,
 #endif
+#if __GLASGOW_HASKELL__ >= 702
+    module SrcLoc,
+#endif
 )
 
 where
@@ -32,7 +35,7 @@ import Bag ( bagToList )
 import GHC hiding ( Phase )
 #endif
 
-import Outputable   ( SDoc, PprStyle, ppr,
+import Outputable   ( PprStyle, SDoc, ppr,
                       showSDoc, showSDocForUser, showSDocUnqual,
                       withPprStyle, defaultErrStyle )
 import ErrUtils     ( Message, mkLocMessage  )
@@ -43,12 +46,8 @@ import Lexer        ( P(..), ParseResult(..), mkPState )
 import Parser       ( parseStmt, parseType )
 import FastString   ( fsLit )
 
-#if __GLASGOW_HASKELL__ >= 701
-import Outputable
-#endif
-
 #if __GLASGOW_HASKELL__ >= 700
-import DynFlags     ( xFlags, xopt )
+import DynFlags     ( supportedLanguagesAndExtensions, xFlags, xopt )
 #else
 import DynFlags     ( supportedLanguages )
 #endif
@@ -56,5 +55,9 @@ import DynFlags     ( supportedLanguages )
 #if __GLASGOW_HASKELL__ >= 608
 import PprTyThing   ( pprTypeForUser )
 #elif __GLASGOW_HASKELL__ < 608
-import SrcLoc       ( SrcSpan, noSrcLoc )
+import SrcLoc       ( SrcSpan )
+#endif
+
+#if __GLASGOW_HASKELL__ >= 702
+import SrcLoc       ( mkRealSrcLoc )
 #endif
