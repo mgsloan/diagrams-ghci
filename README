@@ -2,8 +2,8 @@ Editable Haskell expression yielding live-updating diagrams.
 
 Dependencies:
 
-git clone gtk-toy
-git clone gtk-toy-diagrams
+git clone git@github.com:mgsloan/gtk-toy
+git clone git@github.com:mgsloan/gtk-toy-diagrams
 
 darcs get http://patch-tag.com/r/byorgey/diagrams-core
 darcs get http://patch-tag.com/r/byorgey/diagrams-lib
