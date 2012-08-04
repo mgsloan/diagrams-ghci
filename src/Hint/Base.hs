@@ -19,6 +19,7 @@ where
 
 import Control.Monad.Error
 import Control.Monad.CatchIO
+import Control.Monad.IO.Class (liftIO)
 
 import Data.IORef
 import Data.Dynamic
