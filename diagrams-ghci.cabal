@@ -31,6 +31,7 @@ executable ghcdi
                       ghc-paths,
                       ghc-mtl >= 1.0.1.0 && < 1.1.0.0,
                       mtl,
+                      transformers,
                       filepath,
                       utf8-string,
                       extensible-exceptions,
