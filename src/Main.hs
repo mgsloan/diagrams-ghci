@@ -1,10 +1,12 @@
-{-# LANGUAGE TemplateHaskell
-           , StandaloneDeriving #-}
+{-# LANGUAGE
+    TemplateHaskell
+  , TypeFamilies
+  , StandaloneDeriving #-}
 
 import ActiveHs.Simple
 import qualified Language.Haskell.Interpreter as Ghci
 
-import Graphics.UI.Gtk.Toy.Prelude
+import Graphics.UI.Toy.Prelude
 import Diagrams.Backend.Cairo (Cairo)
 
 import Prelude hiding ((.))
@@ -15,29 +17,37 @@ import Data.Data
 
 main = do
   chan <- startGHCiServer ["."] print print
-  runToy $ State chan cursorText mempty
+  runToy $ State chan cursorText mempty mempty
 
 data State = State
   { _chan :: TaskChan
   , _code :: MarkedText CursorMark
   , _response :: CairoDiagram
+  , _err :: CairoDiagram
   }
+
+type instance V State = R2
 
 $(mkLabels [''State])
 
-plainText = monoText . (`MarkedText` ([] :: [(Ivl, CursorMark)]))
+-- plainText = monoText . (`MarkedText` ([] :: [(Ivl, CursorMark)]))
 
-instance Diagrammable State Cairo R2 where
-  toDiagram (State _ c r) = (alignT $ plainText "> " ||| monoText c)
-                         === 
-                            alignL r
+txt :: String -> CairoDiagram
+txt = drawText monoStyle . (plainText :: String -> MarkedText CursorMark)
 
-instance Interactive State where
-  keyboard k _ s = update $ modify code (textKey k) s
+instance Diagrammable Cairo State where
+  diagram (State _ c r e) = (alignT $ txt "> " ||| drawText monoStyle c)
+                          === 
+                           alignL r
+                          ===
+                           alignL e
 
-instance GtkInteractive State where
+instance Interactive Gtk State where
+  keyboard k _ s = update $ modify code (textKeyHandler k) s
+
+instance GtkDisplay State where
   display = displayDiagram 
-          ( scaleY (-1) . (strutX 50 |||) . (strutY 58 |||) . toDiagram)
+          ( scaleY (-1) . (strutX 50 |||) . (strutY 58 |||) . diagram)
 
 -- Needed in order to be able to provide a witness for CairoDiagram.
 deriving instance Typeable Any
@@ -45,4 +55,6 @@ deriving instance Typeable Any
 update s = do
   val <- interpret (get chan s) "MyPrelude"
        $ Ghci.interpret (get (mText . code) s) (mempty :: CairoDiagram)
-  return $ set response (either (plainText . show) id val) s
+  return $ case val of
+    Left e -> set err (txt $ show e) s
+    Right x -> set err mempty $ set response x s
