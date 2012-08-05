@@ -1,0 +1,20 @@
+foldl1 (<>) $ map circle [1,5..30]
+
+map circle [1..10]
+
+foldl1 (<>) $ map (\x -> circle x # translateX x # fcA (red `withOpacity` (3 /x))) [1,5..100]
+
+foldl1 (<>) $ map (\x -> square x # rotate (Deg x)) [1,5..120]
+
+zip [1..] $ map (\x -> square x # rotate (Deg x)) [1,5..30]
+
+(5 % 3 * 100.4)
+
+5 % 3 * 100.4
+
+zip ['a'..'z'] $ zipWith (<>) (map circle [1,3..10]) (map square [20,18..0])
+
+runTurtle $ do { forward 100; right 30; forward 90; }
+
+(square 50 <> centerY (ghcdiShow (4 % 3) 0)) ||| scaleY 0.3 (circle 40)
+  ||| overlapAlong (r2 (-20,0)) (octagon 30))

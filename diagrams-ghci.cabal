@@ -13,7 +13,7 @@ Build-Type:          Simple
 
 executable ghcdi
   Main-Is:           Main.hs
-  Hs-Source-Dirs:    src
+  Hs-Source-Dirs:    src, deps
   Build-Depends:
                      containers,
                      colour,
@@ -21,8 +21,10 @@ executable ghcdi
                      diagrams-cairo,
                      diagrams-contrib,
                      fclabels,
+                     gtk,
                      gtk-toy,
                      gtk-toy-diagrams,
+                     haskell-src-exts,
 
                      -- Hint
                       base >= 4, base < 5,
