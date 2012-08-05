@@ -73,6 +73,7 @@ instance Interactive Gtk State where
 
       let text = get (mText C.. code) s
       appendFile "history" ("\n\n" ++ text)
+        `catchError` const (return ())
       return $ modify history (text:) s
 
     |             eitherHeld "Alt"     i = update $

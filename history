@@ -20,5 +20,5 @@ runTurtle $ do { forward 100; right 30; forward 90; }
 let { s 0 = eqTriangle 20;
       s (n+1) = s n
                 ===
-        centerX (s n ||| s n)
+           (s n ||| s n) # centerX
     } in s 5
