@@ -18,5 +18,7 @@ runTurtle $ do { forward 100; right 30; forward 90; }
   ||| overlapAlong (r2 (-20,0)) (octagon 30))
 
 let { s 0 = eqTriangle 20;
-      s n = vcat [s (n-1), centerX $ s (n-1) ||| s (n-1)]
+      s (n+1) = s n
+                ===
+        centerX (s n ||| s n)
     } in s 5
