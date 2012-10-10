@@ -1,9 +1,10 @@
 {-# LANGUAGE
-    ScopedTypeVariables
+    DeriveDataTypeable
+  , ScopedTypeVariables
   , StandaloneDeriving
   #-}
 module Interpret where
-import ActiveHs.Simple         (TaskChan, interpret, typeOf)
+import ActiveHs.Simple         (TaskChan, interpret)
 import Control.Applicative     ((<$>))
 import Control.Monad           (join, mapM, liftM)
 import Data.Generics           (Data, Typeable, listify, everywhere, extT)
@@ -18,9 +19,32 @@ import Language.Haskell.Exts.Annotated
 -- Needed in order to be able to provide a witness for CairoDiagram.
 deriving instance Typeable Any
 
+errorText :: Ghci.InterpreterError -> String
+errorText (Ghci.UnknownError err) = "Unk: " ++ err
+errorText (Ghci.WontCompile es) = unlines $ map Ghci.errMsg es
+errorText (Ghci.NotAllowed e) = "Not Allowed: " ++ e
+errorText (Ghci.GhcException e) = "GHC error: " ++ e
+
+mapLeft :: (a -> b) -> Either a c -> Either b c
+mapLeft f (Left  x) = Left $ f x
+mapLeft _ (Right y) = Right y
+
+ghcdiInterpret :: TaskChan -> String -> IO (Either String (Double -> CairoDiagram))
+ghcdiInterpret tc code = do
+  result <- join . mapLeft errorText <$> interpret tc "MyPrelude" process
+  case result of
+    (Left e) -> return $ Left e
+    (Right x) -> return $ Right x
+ where
+  process = Right <$> Ghci.interpret ("ghcdiShow (" ++ code ++ ")") witness
+  witness = undefined :: Double -> CairoDiagram
+
+sp :: SrcSpanInfo
+sp = SrcSpanInfo (SrcSpan "" 0 0 0 0) [] --error "srcspan"
+
+{-
 debug x = trace (show x) x
 pdebug x = trace (prettyPrint x) x
-
 
 ghcdiInterpret :: TaskChan -> String -> IO (Either String (Double -> CairoDiagram))
 ghcdiInterpret tc code = do
@@ -77,19 +101,9 @@ ghcdiInterpret tc code = do
 getAssts :: Context SrcSpanInfo -> [Asst SrcSpanInfo]
 getAssts = listify (const True :: Asst SrcSpanInfo -> Bool)
 
-mapLeft :: (a -> b) -> Either a c -> Either b c
-mapLeft f (Left  x) = Left $ f x
-mapLeft _ (Right y) = Right y
-
-errorText :: Ghci.InterpreterError -> String
-errorText (Ghci.UnknownError err) = "Unk: " ++ err
-errorText (Ghci.WontCompile es) = unlines $ map Ghci.errMsg es
-errorText (Ghci.NotAllowed e) = "Not Allowed: " ++ e
-errorText (Ghci.GhcException e) = "GHC error: " ++ e
 
 
-sp :: SrcSpanInfo
-sp = SrcSpanInfo (SrcSpan "" 0 0 0 0) [] --error "srcspan"
+
 
 -- | Parse mode with all extensions and no fixities.
 parseMode :: ParseMode
@@ -101,3 +115,4 @@ parseMode = ParseMode
   , ignoreLanguagePragmas = False
   , fixities = Nothing
   }
+-}

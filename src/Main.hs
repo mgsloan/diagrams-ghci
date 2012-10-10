@@ -1,5 +1,6 @@
 {-# LANGUAGE
-    TemplateHaskell
+    MultiParamTypeClasses
+  , TemplateHaskell
   , TupleSections
   , TypeFamilies
   #-}
