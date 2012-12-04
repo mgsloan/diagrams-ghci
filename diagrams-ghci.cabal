@@ -26,6 +26,7 @@ executable ghcdi
                      gtk-toy-diagrams,
                      haskell-src-exts,
                      hint,
+                     marked-text,
                      mtl,
                      syb
   Other-Modules:     ActiveHs.Simple

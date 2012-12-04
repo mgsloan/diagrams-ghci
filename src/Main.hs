@@ -16,7 +16,8 @@ import Data.List              (groupBy, find)
 import Diagrams.Backend.Cairo (Cairo)
 import Control.Monad          (join, liftM)
 import Control.Monad.Error    (catchError)
-import Graphics.UI.Toy.Prelude hiding (debug)
+import Graphics.UI.Toy.Prelude
+import Graphics.UI.Toy.Text
 
 import qualified Graphics.UI.Gtk.General.General as G
 import qualified Language.Haskell.Interpreter as Ghci
@@ -49,8 +50,8 @@ $(mkLabels [''State])
 
 --TODO use CatOpts
 
-instance Diagrammable Cairo State where
-  diagram (State _ c r a e _ h) = vcat
+instance Diagrammable Cairo R2 State where
+  diagram (State _ c r a e _ h) = blackLined $ vcat
     [ alignT $ txt "> " ||| (drawText monoStyle c === a)
     , strutY 15
     , alignL (r 0.0)
@@ -94,7 +95,7 @@ instance GtkDisplay State where
 --    `catch` (\e -> displayDiagram (txt . show) dw i e >> return s)
    where
     disp = displayDiagram
-         ( scaleY (-1) . (strutX 50 |||) . (strutY 58 |||) . (=== hist) . diagram )
+         (\x -> strutX 50 ||| (strutY 50 === diagram x === hist) # reflectY)
     hist
       | eitherHeld "Alt" i
         = vcat

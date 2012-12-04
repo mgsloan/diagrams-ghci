@@ -29,20 +29,9 @@ mapLeft :: (a -> b) -> Either a c -> Either b c
 mapLeft f (Left  x) = Left $ f x
 mapLeft _ (Right y) = Right y
 
-ghcdiInterpret :: TaskChan -> String -> IO (Either String (Double -> CairoDiagram))
-ghcdiInterpret tc code = do
-  result <- join . mapLeft errorText <$> interpret tc "MyPrelude" process
-  case result of
-    (Left e) -> return $ Left e
-    (Right x) -> return $ Right x
- where
-  process = Right <$> Ghci.interpret ("ghcdiShow (" ++ code ++ ")") witness
-  witness = undefined :: Double -> CairoDiagram
-
 sp :: SrcSpanInfo
 sp = SrcSpanInfo (SrcSpan "" 0 0 0 0) [] --error "srcspan"
 
-{-
 debug x = trace (show x) x
 pdebug x = trace (prettyPrint x) x
 
@@ -60,7 +49,7 @@ ghcdiInterpret tc code = do
               | otherwise                                                = True
   process = do
     set [languageExtensions := filter extFilter availableExtensions]
-    type_text <- typeOf code
+    type_text <- Ghci.typeOf code
     case parseTypeWithMode parseMode type_text of
       (ParseOk ty) -> Right <$>
         exec (debug ("ghcdiShow ((" ++ code ++ ") :: " ++ processType ty ++ ")"))
@@ -102,9 +91,6 @@ getAssts :: Context SrcSpanInfo -> [Asst SrcSpanInfo]
 getAssts = listify (const True :: Asst SrcSpanInfo -> Bool)
 
 
-
-
-
 -- | Parse mode with all extensions and no fixities.
 parseMode :: ParseMode
 parseMode = ParseMode
@@ -115,4 +101,3 @@ parseMode = ParseMode
   , ignoreLanguagePragmas = False
   , fixities = Nothing
   }
--}
