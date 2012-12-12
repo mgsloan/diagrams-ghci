@@ -14,9 +14,6 @@ zip ['a'..'z'] $ zipWith (<>) (map circle [1,3..10]) (map square [20,18..0])
 
 runTurtle $ do { forward 100; right 30; forward 90; }
 
-(square 50 <> centerY (ghcdiShow (4 % 3) 0)) ||| scaleY 0.3 (circle 40)
-  ||| overlapAlong (r2 (-20,0)) (octagon 30))
-
 let { s 0 = eqTriangle 20;
       s (n+1) = s n
                 ===
