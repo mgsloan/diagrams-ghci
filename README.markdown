@@ -32,12 +32,4 @@ cd ../diagrams-ghci
 cabal install
 ```
 
-All of the code except src/Main.hs aren't mine and come from the following
-sources:
-
-  - Hint by Daniel Gorin. For some reason beyond me Hint builds / installs
-    yet refuses to be visible to GHC due to package issues.  So for now it's
-    included.
-
-  - ActiveHs by Péter Diviánszky.  This is included because you can't use
-    an application as a library!  Also because of the Hint business.
+"src/ActiveHs/Simple.hs" is from ActiveHs by Péter Diviánszky.  This is included because you can't use an application as a library!
