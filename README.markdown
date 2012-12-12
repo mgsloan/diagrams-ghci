@@ -2,13 +2,17 @@ Editable Haskell expression yielding live-updating diagrams.
 
 Dependencies:
 
+```
 git clone git@github.com:mgsloan/gtk-toy
 git clone git@github.com:mgsloan/gtk-toy-diagrams
 
 darcs get http://patch-tag.com/r/byorgey/diagrams-core
 darcs get http://patch-tag.com/r/byorgey/diagrams-lib
 darcs get http://patch-tag.com/r/byorgey/diagrams-cairo
+```
 
+Build:
+```
 cd diagrams-core
 cabal install
 
@@ -26,7 +30,7 @@ cabal install
 
 cd ../diagrams-ghci
 cabal install
-
+```
 
 All of the code except src/Main.hs aren't mine and come from the following
 sources:
