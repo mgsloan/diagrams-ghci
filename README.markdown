@@ -1,14 +1,21 @@
 Editable Haskell expression yielding live-updating diagrams.
 
-Dependencies:
+Dependencies (sorry for the inconvenience - hope to get these on hackage soon!):
 
-git clone git@github.com:mgsloan/gtk-toy
-git clone git@github.com:mgsloan/gtk-toy-diagrams
+```
+git clone https://github.com/mgsloan/toy-interface.git
+git clone https://github.com/mgsloan/gtk-toy.git
+git clone https://github.com/mgsloan/gtk-toy-diagrams.git
+git clone https://github.com/mgsloan/marked-text.git
 
-darcs get http://patch-tag.com/r/byorgey/diagrams-core
-darcs get http://patch-tag.com/r/byorgey/diagrams-lib
-darcs get http://patch-tag.com/r/byorgey/diagrams-cairo
+# Probably not currently necessary - v0.6 is now on hackage.
+git clone https://github.com/diagram/diagrams-core.git
+git clone https://github.com/diagram/diagrams-lib.git
+git clone https://github.com/diagram/diagrams-cairo.git
+```
 
+Build:
+```
 cd diagrams-core
 cabal install
 
@@ -18,22 +25,20 @@ cabal install
 cd ../diagrams-cairo
 cabal install
 
+cd ../toy-interface
+cabal install
+
 cd ../gtk-toy
 cabal install
 
 cd ../gtk-toy-diagrams
 cabal install
 
-cd ../diagrams-ghci
+cd ../marked-text
 cabal install
 
+cd ../diagrams-ghci
+cabal install
+```
 
-All of the code except src/Main.hs aren't mine and come from the following
-sources:
-
-  - Hint by Daniel Gorin. For some reason beyond me Hint builds / installs
-    yet refuses to be visible to GHC due to package issues.  So for now it's
-    included.
-
-  - ActiveHs by Péter Diviánszky.  This is included because you can't use
-    an application as a library!  Also because of the Hint business.
+"src/ActiveHs/Simple.hs" is from ActiveHs by Péter Diviánszky.  This is included because you can't use an application as a library!
