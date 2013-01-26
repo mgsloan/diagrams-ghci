@@ -14,19 +14,22 @@ Build-Type:          Simple
 executable ghcdi
   Main-Is:           Main.hs
   Hs-Source-Dirs:    src
+  ghc-options:       -Wall
   Build-Depends:     base >= 4 && < 5,
                      containers,
                      colour,
-                     diagrams-lib,
+                     data-default,
+                     diagrams-lib >= 0.6 && < 0.7,
                      diagrams-cairo,
                      diagrams-contrib,
-                     fclabels,
+                     fsnotify,
                      gtk,
                      gtk-toy,
-                     gtk-toy-diagrams,
+                     gtk-toy-diagrams >= 0.2,
                      haskell-src-exts,
                      hint,
-                     marked-text,
+                     system-filepath,
                      mtl,
                      syb
   Other-Modules:     ActiveHs.Simple
+                     Interpret

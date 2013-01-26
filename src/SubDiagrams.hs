@@ -25,9 +25,6 @@ import qualified Control.Category as C
 import qualified Control.Monad.State as ST
 import qualified Data.Map as M
 
-txt :: String -> CairoDiagram
-txt = drawText monoStyle . (plainText :: String -> MarkedText CursorMark)
-
 subDiagrams :: String -> TaskChan -> CairoDiagram
 subDiagrams code tc =
   case parseExp code of

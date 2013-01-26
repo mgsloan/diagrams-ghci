@@ -52,11 +52,13 @@ ghcdiInterpret tc code = do
     type_text <- Ghci.typeOf code
     case parseTypeWithMode parseMode type_text of
       (ParseOk ty) -> Right <$>
-        exec (debug ("ghcdiShow ((" ++ code ++ ") :: " ++ processType ty ++ ")"))
+        exec (debug ("ghcdiShow ((\n" ++ fixCode code ++ ") :: " ++ processType ty ++ ")"))
       (ParseFailed _ err) -> return $ Left ("Type parse error: " ++ err)
   
   fallback = interpret tc "MyPrelude" . exec
-           $ "const (" ++ code ++ ") :: Double -> CairoDiagram"
+           $ "const (\n" ++ fixCode code ++ ") :: Double -> CairoDiagram"
+
+  fixCode = unlines . map (' ':) . lines
 
   processType ty = prettyPrint $ case ty of
     (TyForall loc tvs (Just ctx) t)
