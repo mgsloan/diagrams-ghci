@@ -4,8 +4,8 @@ Dependencies (sorry for the inconvenience - hope to get these on hackage soon!):
 
 ```
 git clone https://github.com/mgsloan/toy-interface.git
-git clone https://github.com/mgsloan/gtk-toy.git
-git clone https://github.com/mgsloan/gtk-toy-diagrams.git
+git clone https://github.com/mgsloan/toy.git
+git clone https://github.com/mgsloan/toy-gtk-diagrams.git
 git clone https://github.com/mgsloan/marked-text.git
 
 # Probably not currently necessary - v0.6 is now on hackage.
