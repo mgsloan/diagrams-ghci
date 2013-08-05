@@ -4,14 +4,13 @@
   , StandaloneDeriving
   #-}
 module Interpret where
-import ActiveHs.Simple         (TaskChan, interpret)
-import Control.Applicative     ((<$>))
-import Control.Monad           (join, mapM, liftM)
-import Data.Generics           (Data, Typeable, listify, everywhere, extT)
-import Data.List               (delete)
-import Data.Maybe              (catMaybes)
-import Debug.Trace             (trace)
-import Graphics.UI.Toy.Prelude (CairoDiagram, Any)
+import ActiveHs.Simple             (TaskChan, interpret)
+import Control.Applicative         ((<$>))
+import Control.Monad               (join, liftM)
+import Data.Generics               (Data, Typeable, listify, everywhere, extT)
+import Data.Maybe                  (catMaybes)
+import Debug.Trace                 (trace)
+import Graphics.UI.Toy.Gtk.Prelude (CairoDiagram, Any)
 import Language.Haskell.Interpreter (set, languageExtensions, OptionVal(..), availableExtensions)
 import qualified Language.Haskell.Interpreter as Ghci
 import Language.Haskell.Exts.Annotated
@@ -54,19 +53,19 @@ ghcdiInterpret tc code = do
       (ParseOk ty) -> Right <$>
         exec (debug ("ghcdiShow ((\n" ++ fixCode code ++ ") :: " ++ processType ty ++ ")"))
       (ParseFailed _ err) -> return $ Left ("Type parse error: " ++ err)
-  
+
   fallback = interpret tc "MyPrelude" . exec
            $ "const (\n" ++ fixCode code ++ ") :: Double -> CairoDiagram"
 
   fixCode = unlines . map (' ':) . lines
 
   processType ty = prettyPrint $ case ty of
-    (TyForall loc tvs (Just ctx) t)
+    (TyForall l tvs (Just ctx) t)
       -> let assts = getAssts ctx
              subs = catMaybes $ map (liftM prettyPrint . diagramAsst) assts
              t' = everywhere (id `extT` doSub subs) t
              ctx' = CxTuple sp . catMaybes $ map (processAsst $ allTyVars t') assts
-          in TyForall loc tvs (Just ctx') t'
+          in TyForall l tvs (Just ctx') t'
     _ -> ty
 
   doSub l t | prettyPrint t `elem` l = TyVar sp (Ident sp "CairoDiagram")

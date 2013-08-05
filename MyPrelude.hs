@@ -9,27 +9,20 @@
 -- |Used as the context for diagrams-ghci
 module MyPrelude () where
 import Prelude
-import Control.Arrow ((&&&), (***))
 import Data.List     (intersperse)
-import Data.String
 import Data.Ratio
 import Diagrams.Prelude
 import Diagrams.Backend.Cairo
 import Diagrams.TwoD.Path.Turtle
 import Diagrams.TwoD.Text
-import Diagrams.TwoD.Combinators
-import Graphics.UI.Toy.Text     (monoStyle, plainText, drawText, MarkedText, CursorMark)
-import Graphics.UI.Toy.Diagrams (CairoDiagram)
-import Unsafe.Coerce            (unsafeCoerce)
-
-txt = drawText monoStyle . (plainText :: String -> MarkedText CursorMark)
+import Graphics.UI.Toy.Gtk.Prelude
 
 class GhcdiShow a where
   -- First parameter is animation time
   ghcdiShow :: a -> Double -> CairoDiagram
 
   default ghcdiShow :: Show a => a -> Double -> CairoDiagram
-  ghcdiShow x _ = txt $ show x
+  ghcdiShow x _ = preText $ show x
 
 -- You'd better be using cairo diagrams... :)
 instance GhcdiShow CairoDiagram where
@@ -37,7 +30,7 @@ instance GhcdiShow CairoDiagram where
 
 listLike' :: String -> String -> String
           -> [CairoDiagram] -> CairoDiagram
-listLike' s m e = listLike (txt s) (txt m) (txt e)
+listLike' s m e = listLike (preText s) (preText m) (preText e)
 
 listLike :: CairoDiagram -> CairoDiagram -> CairoDiagram
          -> [CairoDiagram] -> CairoDiagram
@@ -65,7 +58,7 @@ instance (GhcdiShow a, GhcdiShow b, GhcdiShow c, GhcdiShow d)
   ghcdiShow (x, y, u, v) t
     = listLike' "(" ", " ")" [ghcdiShow x t, ghcdiShow y t, ghcdiShow u t, ghcdiShow v t]
 
-ctxt = centerY . txt
+ctxt = centerY . preText
 cgs x = centerY . ghcdiShow x
 
 instance GhcdiShow a => GhcdiShow (Maybe a) where
